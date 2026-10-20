@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `p256` feature, for consistency with `p384` and `ed25519`.
 - The `webpki` verifier now uses rustls-webpki 0.103 and checks signatures through `embassy-crypto`. It verifies RSA chains with the `rsa` feature, without `std`, and uses the intermediates the server sends.
 - Removed the `alloc` feature. The `rsa` feature no longer turns on `rustpki`. The `webpki` and `rustpki` features each need at least one of `p256`, `p384`, `ed25519` and `rsa`.
-- `p256` is now a default feature, and the client offers only the signature schemes of the enabled signature features. `TlsConfig::enable_rsa_signatures` needs `rsa`.
+- `p256` is now a default feature, and the client offers only the signature schemes of the enabled signature features. `TlsConfig::enable_rsa_signatures` still offers the RSA schemes without `rsa`, for a verifier that does not check them, such as `InsecureNoVerify`.
 - A build with no signature feature can only use a pre-shared key. `open` without one fails with the new `TlsError::MissingPsk`.
 - An RSA `CertificateVerify` from the server must use RSASSA-PSS. RFC 9846 section 4.3.3 defines the `rsa_pkcs1` schemes for signatures in certificates only.
 - Certificates signed with P-256 and SHA-384, or P-384 and SHA-256, no longer verify. TLS 1.3 has no scheme for these pairs.

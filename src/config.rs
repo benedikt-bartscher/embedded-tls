@@ -425,8 +425,11 @@ impl<'a> TlsConfig<'a> {
         config
     }
 
-    /// Enable RSA ciphers even if they might not be supported.
-    #[cfg(feature = "rsa")]
+    /// Offer the RSA signature schemes, also without the `rsa` feature.
+    ///
+    /// With `rsa`, [`TlsConfig::new`] offers them already. Without it, the `webpki` and `rustpki`
+    /// verifiers cannot check an RSA signature, so this is for a verifier that does not need them,
+    /// such as [`InsecureNoVerify`] or a [`TlsVerifier`] of your own.
     pub fn enable_rsa_signatures(mut self) -> Self {
         unwrap!(
             self.signature_schemes
@@ -644,6 +647,16 @@ mod tests {
         assert_eq!(
             advertises(SignatureScheme::RsaPssRsaeSha256),
             cfg!(feature = "rsa")
+        );
+    }
+
+    #[test]
+    fn enable_rsa_signatures_offers_the_rsa_schemes_with_any_features() {
+        let config = TlsConfig::new().enable_rsa_signatures();
+        assert!(
+            config
+                .signature_schemes
+                .contains(&SignatureScheme::RsaPssRsaeSha256)
         );
     }
 }
